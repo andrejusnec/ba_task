@@ -36,3 +36,12 @@ services:
     depends_on:
       - php
       - database
+  mailer:
+    container_name: ba_mailer
+    image: schickling/mailcatcher
+    ports:
+      - 1025
+      - 1080
+    depends_on:
+      - php
+      - nginx
