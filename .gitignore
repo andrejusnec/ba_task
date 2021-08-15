@@ -7,6 +7,9 @@
 /public/bundles/
 /var/
 /vendor/
+/mysql/
+/nginx/
+/php/
 ###< symfony/framework-bundle ###
 
 # Created by https://www.toptal.com/developers/gitignore/api/symfony,phpstorm,phpstorm+all
