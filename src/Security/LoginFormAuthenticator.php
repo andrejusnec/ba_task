@@ -9,6 +9,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
+use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Core\Exception\CustomUserMessageAuthenticationException;
 use Symfony\Component\Security\Core\Security;
 use Symfony\Component\Security\Http\Authenticator\AbstractLoginFormAuthenticator;
@@ -53,9 +54,9 @@ class LoginFormAuthenticator extends AbstractLoginFormAuthenticator
                 new RememberMeBadge(),
             ]
         );
-        if (null === $this->userRepository->findOneBy(['email' => $email, 'isVerified' => true])) {
-            throw new CustomUserMessageAuthenticationException('Email is not verified');
-        }
+//        if (null === $this->userRepository->findOneBy(['email' => $email, 'isVerified' => true])) {
+//            throw new CustomUserMessageAuthenticationException('Email is not verified');
+//        }
         return $passport;
     }
 
@@ -77,4 +78,5 @@ class LoginFormAuthenticator extends AbstractLoginFormAuthenticator
     {
         return $this->urlGenerator->generate(self::LOGIN_ROUTE);
     }
+
 }

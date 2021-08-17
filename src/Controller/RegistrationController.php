@@ -10,9 +10,10 @@ use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\Mime\Address;
 use Symfony\Component\Routing\Annotation\Route;
-use \Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Security\Http\Authentication\UserAuthenticatorInterface;
 use SymfonyCasts\Bundle\VerifyEmail\Exception\VerifyEmailExceptionInterface;
 
@@ -25,6 +26,9 @@ class RegistrationController extends AbstractController
         $this->emailVerifier = $emailVerifier;
     }
 
+    /**
+     * @throws TransportExceptionInterface
+     */
     #[Route('/register', name: 'app_register')]
     public function register(Request                     $request,
                              UserPasswordHasherInterface $passwordHasher,
@@ -57,8 +61,8 @@ class RegistrationController extends AbstractController
                     ->htmlTemplate('registration/confirmation_email.html.twig')
             );
 
-            //$userAuthenticator->authenticateUser($user, $loginFormAuthenticator, $request);
-            return $this->redirectToRoute('app_login');
+            $userAuthenticator->authenticateUser($user, $loginFormAuthenticator, $request);
+            return $this->redirectToRoute('user');
         }
 
         return $this->render('registration/register.html.twig', [
@@ -80,9 +84,8 @@ class RegistrationController extends AbstractController
             return $this->redirectToRoute('app_register');
         }
 
-        // @TODO Change the redirect on success and handle or remove the flash message in your templates
-        $this->addFlash('success', 'Your email address has been verified.');
 
-        return $this->redirectToRoute('user');
+        $this->addFlash('success', 'Your email address has been verified.');
+        return $this->redirectToRoute('address/add');
     }
 }
