@@ -3,18 +3,29 @@
 {% block title %}Hello AddressController!{% endblock %}
 
 {% block body %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
-
-<div class="example-wrapper">
-    <h1>Hello {{ controller_name }}! ✅</h1>
-
-    This friendly message is coming from:
-    <ul>
-        <li>Your controller at <code><a href="{{ 'C:/xampp/htdocs/ba_project/ba_task/src/Controller/AddressController.php'|file_link(0) }}">src/Controller/AddressController.php</a></code></li>
-        <li>Your template at <code><a href="{{ 'C:/xampp/htdocs/ba_project/ba_task/templates/address/index.html.twig'|file_link(0) }}">templates/address/index.html.twig</a></code></li>
-    </ul>
-</div>
+    <div class="row">
+        <div class="col-md-6">
+            <table class="table">
+                <thead>
+                <tr>
+                    <th scope="col">name</th>
+                    <th scope="col">phone</th>
+                    <th scope="col">&nbsp;</th>
+                    <th scope="col">&nbsp;</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for item in list %}
+                    <tr>
+                        <th scope="row">{{ item.name }}</th>
+                        <td>{{ item.number }}</td>
+                        <td><a class="btn-primary btn" href="{{ path('address/edit', { id : item.id }) }}">EDIT</a></td>
+                        <td><a class="btn-primary btn" href="{{ path('address/show', { id : item.id }) }}">SHOW</a></td>
+                        <td><form method="post" action="{{ path('address/delete', {id : item.id}) }}"><button class="btn btn-primary" name="id">DELETE</button></form></td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
 {% endblock %}

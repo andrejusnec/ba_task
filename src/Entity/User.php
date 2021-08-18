@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
@@ -51,6 +53,22 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @ORM\Column(type="boolean")
      */
     private $isVerified = false;
+
+    /**
+     * @ORM\OneToMany(targetEntity=AddressBook::class, mappedBy="user", orphanRemoval=true)
+     */
+    private $addressBooks;
+
+    /**
+     * @ORM\OneToMany(targetEntity=QueryList::class, mappedBy="sender", orphanRemoval=true)
+     */
+    private $queryLists;
+
+    public function __construct()
+    {
+        $this->addressBooks = new ArrayCollection();
+        $this->queryLists = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -173,6 +191,66 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setIsVerified(bool $isVerified): self
     {
         $this->isVerified = $isVerified;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|AddressBook[]
+     */
+    public function getAddressBooks(): Collection
+    {
+        return $this->addressBooks;
+    }
+
+    public function addAddressBook(AddressBook $addressBook): self
+    {
+        if (!$this->addressBooks->contains($addressBook)) {
+            $this->addressBooks[] = $addressBook;
+            $addressBook->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAddressBook(AddressBook $addressBook): self
+    {
+        if ($this->addressBooks->removeElement($addressBook)) {
+            // set the owning side to null (unless already changed)
+            if ($addressBook->getUser() === $this) {
+                $addressBook->setUser(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|QueryList[]
+     */
+    public function getQueryLists(): Collection
+    {
+        return $this->queryLists;
+    }
+
+    public function addQueryList(QueryList $queryList): self
+    {
+        if (!$this->queryLists->contains($queryList)) {
+            $this->queryLists[] = $queryList;
+            $queryList->setSender($this);
+        }
+
+        return $this;
+    }
+
+    public function removeQueryList(QueryList $queryList): self
+    {
+        if ($this->queryLists->removeElement($queryList)) {
+            // set the owning side to null (unless already changed)
+            if ($queryList->getSender() === $this) {
+                $queryList->setSender(null);
+            }
+        }
 
         return $this;
     }

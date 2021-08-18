@@ -2,13 +2,13 @@
 
 namespace App\Form;
 
-use App\Entity\Address;
+use App\Entity\AddressBook;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class AddressType extends AbstractType
+class AddressBookType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
@@ -16,16 +16,15 @@ class AddressType extends AbstractType
             ->add('name', TextType::class, [
                 'attr' => ['class' => 'form-control'],
             ])
-            ->add('phone', TextType::class, [
+            ->add('number', TextType::class, [
                 'attr' => ['class' => 'form-control'],
-            ])
-        ;
+            ]);
     }
 
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'data_class' => Address::class,
+            'data_class' => AddressBook::class,
         ]);
     }
 }
