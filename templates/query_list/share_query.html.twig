@@ -1,0 +1,21 @@
+{% extends 'base.html.twig' %}
+{% block body %}
+{{ form_start(form, { 'attr' : { 'class': 'row flex-column' } }) }}
+<h2 class="col-md-3 offset-md-4" style="margin-top: 50px">Sharing is caring</h2>
+<div class="my-custom-class-for-errors col-md-3 offset-md-4">
+    {{ form_errors(form) }}
+</div>
+<div class="col-md-4" style="margin: auto">
+    {{ form_row(form.receiver) }}
+</div>
+    <div class="col-md-4" style="margin: auto">
+        {{ form_row(form.sender) }}
+    </div>
+    <div class="col-md-4" style="margin: auto">
+        {{ form_row(form.addressRecord) }}
+    </div>
+<div class="col-md-3 offset-md-4" style="margin-top: 10px;">
+    <button class="btn btn-primary" type="submit">Share</button>
+</div>
+{{ form_end(form) }}
+{% endblock %}

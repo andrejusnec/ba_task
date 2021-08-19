@@ -87,4 +87,12 @@ class AddressBook
 
         return $this;
     }
+
+    /**
+     * @return string|null
+     */
+    public function __toString()
+    {
+        return $this->name;
+    }
 }

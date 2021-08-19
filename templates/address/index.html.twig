@@ -4,24 +4,19 @@
 
 {% block body %}
     <div class="row">
-        <div class="col-md-6">
-            <table class="table">
+        <div class="col-md-10">
+            <table class="table table-bordered">
                 <thead>
                 <tr>
                     <th scope="col">name</th>
                     <th scope="col">phone</th>
-                    <th scope="col">&nbsp;</th>
-                    <th scope="col">&nbsp;</th>
                 </tr>
                 </thead>
                 <tbody>
                 {% for item in list %}
                     <tr>
-                        <th scope="row">{{ item.name }}</th>
+                        <th scope="row"><a style="text-decoration: none; color: black" href="{{ path('address/show', { id : item.id }) }}">{{ item.name }}</a></th>
                         <td>{{ item.number }}</td>
-                        <td><a class="btn-primary btn" href="{{ path('address/edit', { id : item.id }) }}">EDIT</a></td>
-                        <td><a class="btn-primary btn" href="{{ path('address/show', { id : item.id }) }}">SHOW</a></td>
-                        <td><form method="post" action="{{ path('address/delete', {id : item.id}) }}"><button class="btn btn-primary" name="id">DELETE</button></form></td>
                     </tr>
                 {% endfor %}
                 </tbody>

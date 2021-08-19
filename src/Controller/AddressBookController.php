@@ -3,8 +3,10 @@
 namespace App\Controller;
 
 use App\Entity\AddressBook;
+use App\Entity\User;
 use App\Form\AddressBookType;
 use App\Repository\AddressBookRepository;
+use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -83,8 +85,9 @@ class AddressBookController extends AbstractController
     /**
      * @Route("/address/{id}/show", name="address/show")
      */
-    public function show(AddressBook $addressBook): Response
+    public function show($id): Response
     {
+        $addressBook = $this->entityManager->getRepository(AddressBook::class)->findOneBy(['id' => $id]);
         return $this->render('address/show.html.twig', ['addressBook' => $addressBook]);
     }
 

@@ -62,12 +62,12 @@ class QueryList
         return $this;
     }
 
-    public function getReceiver(): ?User
+    public function getReceiver()
     {
         return $this->receiver;
     }
 
-    public function setReceiver(?User $receiver): self
+    public function setReceiver($receiver): self
     {
         $this->receiver = $receiver;
 
