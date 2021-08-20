@@ -30,6 +30,14 @@ class AuthController extends AbstractController
     }
 
     /**
+     * @Route("/login/resend_email_verification", name="resend_email_verification")
+     */
+    public function resendEmailVerification(): Response
+    {
+        return $this->render('security/resend_email.html.twig');
+    }
+
+    /**
      * @Route("/logout", name="app_logout")
      */
     public function logout()

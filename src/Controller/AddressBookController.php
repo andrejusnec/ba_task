@@ -44,8 +44,8 @@ class AddressBookController extends AbstractController
      */
     public function index(): Response
     {
-        $list = $this->addressBookRepository->findAll();
-        return $this->render('address/index.html.twig', ['list' => $list]);
+        $allAddressbooks = $this->addressBookRepository->findBy(['user' => $this->security->getUser()]);
+        return $this->render('address/index.html.twig', ['list' => $allAddressbooks]);
     }
 
     /**

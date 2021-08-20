@@ -1,0 +1,52 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Shares{% endblock %}
+
+{% block body %}
+    <div class="row">
+        <div class="col-md-10">
+            <table class="table table-bordered">
+                <h2>Sended</h2>
+                <thead>
+                <tr>
+                    <th scope="col">name</th>
+                    <th scope="col">phone</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for item in sharedQueries %}
+                    <tr {{ item.sendStatus is same as(false) ? 'style="background-color:grey; pointer-events:none"' : '' }}>
+                        <th scope="row"><a style="text-decoration: none; color: black" href="{{ path('query_list/show_sended', {id : item.id}) }}">{{ item.receiver }}</a></th>
+                        <td>{{ item.addressRecord.name }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="col-md-10">
+            <table class="table table-bordered">
+                <h2>Received</h2>
+                <thead>
+                <tr>
+                    <th scope="col">Name</th>
+                    <th scope="col">Phone</th>
+                    <th scope="col">Status</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for item in receivedQueries %}
+                    <tr {{ item.receiveStatus is same as(false) ? 'style="background-color:grey; pointer-events:none"' : '' }}>
+                        <th scope="row"><a style="text-decoration: none; color: black" href="{{ path('query_list/show_received', {id : item.id}) }}">{{ item.sender }}</a></th>
+                        <td>{{ item.addressRecord.name }}</td>
+                        {% if item.receiveStatus is null %}
+                        <td><strong>(New)</strong></td>
+                        {% else %}
+                        <td>{{ item.receiveStatus ? 'Accepted' : 'Refused' }}</td>
+                        {% endif %}
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}

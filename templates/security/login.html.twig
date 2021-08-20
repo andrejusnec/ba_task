@@ -27,6 +27,9 @@
             >
             <div class="mb-3">
                 <a style="text-decoration: none" href="{{ path('app_forgot_password_request') }}">Forgot password?</a>
+                {% if error and error.messageKey == "Email is not verified." %}
+                    <a style="text-decoration: none" href="{{ path('resend_email_verification') }}">Verify Email</a>
+                {% endif %}
             </div>
             <div class="checkbox mb-3">
                 <label>
