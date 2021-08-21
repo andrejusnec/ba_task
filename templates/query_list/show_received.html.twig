@@ -1,0 +1,22 @@
+{% extends 'base.html.twig' %}
+{% block body %}
+    <div class="card" style="width: 18rem;">
+        <img class="card-img-top" src="#" alt="Card image cap">
+        <div class="card-body">
+            <h5 class="card-title">{{ querylist.AddressRecord.name }}</h5>
+            <p class="card-text">{{ querylist.AddressRecord.number }}</p>
+            <div>
+                <form style="display: inline-block" method="post"
+                      action="{{ path('query_list/resolve', {id : querylist.id, action : 'Accept' }) }}">
+                    <button class="btn-sm btn-success btn">Accept</button>
+                </form>
+                <form style="display: inline-block" method="post"
+                      action="{{ path('query_list/resolve', {id : querylist.id, action : 'Reject'}) }}">
+                    <button onclick="return confirm('Are you sure you want to reject this contact?');"
+                            class="btn-sm btn-danger btn">Reject
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}

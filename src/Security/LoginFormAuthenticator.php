@@ -7,6 +7,8 @@ use Exception;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use Symfony\Component\PasswordHasher\PasswordHasherInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
@@ -31,11 +33,20 @@ class LoginFormAuthenticator extends AbstractLoginFormAuthenticator
 
     private UserRepository $userRepository;
 
-    public function __construct(UrlGeneratorInterface $urlGenerator, UserRepository $userRepository)
+    private UserPasswordHasherInterface $passwordHasher;
+
+    /**
+     * @param UrlGeneratorInterface $urlGenerator
+     * @param UserRepository $userRepository
+     * @param UserPasswordHasherInterface $passwordHasher
+     */
+    public function __construct(UrlGeneratorInterface $urlGenerator, UserRepository $userRepository, UserPasswordHasherInterface $passwordHasher)
     {
         $this->urlGenerator = $urlGenerator;
         $this->userRepository = $userRepository;
+        $this->passwordHasher = $passwordHasher;
     }
+
 
     /**
      * @throws Exception
@@ -46,7 +57,7 @@ class LoginFormAuthenticator extends AbstractLoginFormAuthenticator
 
         $request->getSession()->set(Security::LAST_USERNAME, $email);
 
-        $passport =  new Passport(
+        return new Passport(
             new UserBadge($email),
             new PasswordCredentials($request->request->get('password', '')),
             [
@@ -54,10 +65,7 @@ class LoginFormAuthenticator extends AbstractLoginFormAuthenticator
                 new RememberMeBadge(),
             ]
         );
-//        if (null === $this->userRepository->findOneBy(['email' => $email, 'isVerified' => true])) {
-//            throw new CustomUserMessageAuthenticationException('Email is not verified');
-//        }
-        return $passport;
+
     }
 
 
@@ -70,8 +78,8 @@ class LoginFormAuthenticator extends AbstractLoginFormAuthenticator
             return new RedirectResponse($targetPath);
         }
 
-        return new RedirectResponse($this->urlGenerator->generate('user')) ??
-            throw new Exception('TODO: provide a valid redirect inside ' . __FILE__);
+        return new RedirectResponse($this->urlGenerator->generate('addresses')) ??
+            throw new Exception('You forgot to make a valid redirect!' . __FILE__);
     }
 
     protected function getLoginUrl(Request $request): string

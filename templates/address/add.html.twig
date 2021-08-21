@@ -1,19 +1,4 @@
 {% extends 'base.html.twig' %}
 {% block body %}
-<h2 style="margin-top: 50px">Add entry</h2>
-
-{{ form_start(form, { 'attr' : { 'class': 'row flex-column', 'id':'add_form_submit' } }) }}
-<div class="my-custom-class-for-errors">
-    {{ form_errors(form) }}
-</div>
-<div class="col-md-6" style="margin: auto">
-    {{ form_row(form.name) }}
-</div>
-<div class="col-md-6" style="margin: auto">
-    {{ form_row(form.phone) }}
-</div>
-{{ form_end(form) }}
-    <div class="col-md-1" style="margin: auto">
-        <button class="btn btn-primary" type="submit" form="add_form_submit">Add</button>
-    </div>
+    {{ include('address/_form.html.twig', {button : 'Add'}) }}
 {% endblock %}
