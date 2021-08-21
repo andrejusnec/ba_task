@@ -4,22 +4,24 @@
 
 {% block body %}
     <div class="row">
-        <div class="col-md-10">
+        <div class="col-md-12">
             <table class="table table-bordered">
                 <h2>Sended</h2>
                 <thead>
-                <tr>
-                    <th style="width: 40%" scope="col">Name</th>
-                    <th style="width: 40%" scope="col">Phone Number</th>
+                <tr style="background-color: aliceblue;">
+                    <th style="width: 40%" scope="col">To</th>
+                    <th style="width: 40%" scope="col">Contact</th>
                     <th style="width: 20%" scope="col">Status</th>
                 </tr>
                 </thead>
                 <tbody>
                 {% for item in sharedQueries %}
-                    <tr {{ item.sendStatus is same as(false) ? 'style="background-color:grey; pointer-events:none"' : '' }}>
-                        <th scope="row"><a style="text-decoration: none; color: black" href="{{ path('query_list/show_sended', {id : item.id}) }}">{{ item.receiver }}</a></th>
+                    <tr {{ status_style(item.receiveStatus, item.sendStatus) }}>
+                        <th scope="row"><a style="text-decoration: none; color: black"
+                                           href="{{ path('query_list/show_sended', {id : item.id}) }}">{{ item.receiver }}</a>
+                        </th>
                         <td>{{ item.addressRecord.name }}</td>
-                        <td>{{ item.sendStatus ? 'Accepted' : 'Refused' }}</td>
+                        <td>{{ status_text(item.receiveStatus) }}</td>
                     </tr>
                 {% endfor %}
                 </tbody>
@@ -29,21 +31,23 @@
             <table class="table table-bordered">
                 <h2>Received</h2>
                 <thead>
-                <tr>
-                    <th scope="col">Name</th>
-                    <th scope="col">Phone</th>
-                    <th scope="col">Status</th>
+                <tr style="background-color: aliceblue;">
+                    <th style="width: 40%" scope="col">From</th>
+                    <th style="width: 40%" scope="col">Contact</th>
+                    <th style="width: 20%" scope="col">Status</th>
                 </tr>
                 </thead>
                 <tbody>
                 {% for item in receivedQueries %}
-                    <tr {{ item.receiveStatus is same as(false) ? 'style="background-color:grey; pointer-events:none"' : '' }}>
-                        <th scope="row"><a style="text-decoration: none; color: black" href="{{ path('query_list/show_received', {id : item.id}) }}">{{ item.sender }}</a></th>
+                    <tr {{ status_style(item.receiveStatus, item.sendStatus) }} >
+                        <th scope="row"><a style="text-decoration: none; color: black"
+                                           href="{{ path('query_list/show_received', {id : item.id}) }}">{{ item.sender }}</a>
+                        </th>
                         <td>{{ item.addressRecord.name }}</td>
                         {% if item.receiveStatus is null %}
-                        <td><strong>(New)</strong></td>
+                            <td><strong>(New)</strong></td>
                         {% else %}
-                        <td>{{ item.receiveStatus ? 'Accepted' : 'Refused' }}</td>
+                            <td>{{ status_text(item.receiveStatus) }}</td>
                         {% endif %}
                     </tr>
                 {% endfor %}

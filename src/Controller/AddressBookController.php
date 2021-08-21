@@ -3,12 +3,15 @@
 namespace App\Controller;
 
 use App\Entity\AddressBook;
+use App\Entity\QueryList;
 use App\Entity\User;
 use App\Form\AddressBookType;
 use App\Repository\AddressBookRepository;
 use App\Repository\UserRepository;
+use App\Services\AddressHelper;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -94,14 +97,20 @@ class AddressBookController extends AbstractController
     /**
      * @Route("/address/{id}/delete", name="address/delete", methods={"POST"})
      */
-    public function delete(Request $request)
+    public function delete(Request $request, AddressHelper $addressHelper): RedirectResponse
     {
         $addressBook = $this->addressBookRepository->find($request->get('id'));
-        if (null !== $addressBook) {
+        $querylists = $this->entityManager->getRepository(QueryList::class)->findBy(['addressRecord' => $addressBook]);
+        if (null !== $addressBook && $addressHelper->checkForActiveQueryLists($querylists)) {
+            foreach ($querylists as $query){
+                $this->entityManager->remove($query);
+            }
             $this->entityManager->remove($addressBook);
             $this->entityManager->flush();
             $this->addFlash('success', 'Address has been successfully deleted');
             return $this->redirectToRoute('addresses');
         }
+        $this->addFlash('error', 'Contact is missing or you have active Share of this contact.');
+        return $this->redirectToRoute('address/show', ['id' => $addressBook->getId()]);
     }
 }

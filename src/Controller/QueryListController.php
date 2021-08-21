@@ -6,7 +6,6 @@ use App\Entity\AddressBook;
 use App\Entity\QueryList;
 use App\Entity\User;
 use App\Form\QueryListType;
-use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormError;
@@ -15,7 +14,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Security;
-use Symfony\Component\Security\Http\Authentication\CustomAuthenticationFailureHandler;
 
 class QueryListController extends AbstractController
 {
@@ -57,7 +55,8 @@ class QueryListController extends AbstractController
                     'sender' => $sender,
                     'addressRecord' => $addressBook,
                     'sendStatus' => true,
-                    'receiveStatus' => null]);
+                    'receiveStatus' => null
+                ]);
             if (null !== $receiver && null === $queryCheck) {
                 $querylist->setReceiver($receiver);
                 $querylist->setSender($sender);
@@ -69,7 +68,7 @@ class QueryListController extends AbstractController
                 return $this->redirectToRoute('addresses');
             }
             null !== $queryCheck ? $form->addError(new FormError('You already shared this contact.')) :
-            $form->addError(new FormError('There is no user with this email.'));
+                $form->addError(new FormError('There is no user with this email.'));
         }
         return $this->render('query_list/share_query.html.twig', ['form' => $form->createView()]);
     }

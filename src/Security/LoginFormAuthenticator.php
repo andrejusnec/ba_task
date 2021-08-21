@@ -78,7 +78,7 @@ class LoginFormAuthenticator extends AbstractLoginFormAuthenticator
             return new RedirectResponse($targetPath);
         }
 
-        return new RedirectResponse($this->urlGenerator->generate('user')) ??
+        return new RedirectResponse($this->urlGenerator->generate('addresses')) ??
             throw new Exception('You forgot to make a valid redirect!' . __FILE__);
     }
 
