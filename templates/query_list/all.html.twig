@@ -9,8 +9,9 @@
                 <h2>Sended</h2>
                 <thead>
                 <tr>
-                    <th scope="col">name</th>
-                    <th scope="col">phone</th>
+                    <th style="width: 40%" scope="col">Name</th>
+                    <th style="width: 40%" scope="col">Phone Number</th>
+                    <th style="width: 20%" scope="col">Status</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -18,6 +19,7 @@
                     <tr {{ item.sendStatus is same as(false) ? 'style="background-color:grey; pointer-events:none"' : '' }}>
                         <th scope="row"><a style="text-decoration: none; color: black" href="{{ path('query_list/show_sended', {id : item.id}) }}">{{ item.receiver }}</a></th>
                         <td>{{ item.addressRecord.name }}</td>
+                        <td>{{ item.sendStatus ? 'Accepted' : 'Refused' }}</td>
                     </tr>
                 {% endfor %}
                 </tbody>

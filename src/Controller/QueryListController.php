@@ -80,7 +80,7 @@ class QueryListController extends AbstractController
     public function all_querylist(): Response
     {
         $userId = $this->security->getUser()->getId();
-        $receivedQueries = $this->entityManager->getRepository(QueryList::class)->findBy(['receiver' => $userId, 'send_status' => true]);
+        $receivedQueries = $this->entityManager->getRepository(QueryList::class)->findBy(['receiver' => $userId, 'sendStatus' => true]);
         $sharedQueries = $this->entityManager->getRepository(QueryList::class)->findBy(['sender' => $userId]);
         return $this->render('query_list/all.html.twig', ['sharedQueries' => $sharedQueries, 'receivedQueries' => $receivedQueries]);
     }
@@ -141,7 +141,7 @@ class QueryListController extends AbstractController
             $this->entityManager->persist($querylist);
             $this->entityManager->flush();
         }
-        return $this->redirectToRoute('users_querylists');
+        return $this->redirectToRoute("users_querylists");
     }
 
 }
