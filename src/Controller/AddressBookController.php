@@ -15,6 +15,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\Security\Core\Security;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
@@ -45,14 +46,14 @@ class AddressBookController extends AbstractController
     /**
      * @Route("/addresses", name="addresses")
      */
-    public function index(): Response
+    public function all(): Response
     {
         $allAddressbooks = $this->addressBookRepository->findBy(['user' => $this->security->getUser()]);
         return $this->render('address/index.html.twig', ['list' => $allAddressbooks]);
     }
 
     /**
-     * @Route("/address/add", name="address/add")
+     * @Route("/address/add", name="address/add", methods={"POST", "GET"})
      */
     public function add(Request $request): Response
     {
@@ -70,7 +71,7 @@ class AddressBookController extends AbstractController
     }
 
     /**
-     * @Route("/address/{id}/edit", name="address/edit")
+     * @Route("/address/{id}/edit", name="address/edit", methods={"PUT", "POST", "GET"})
      */
     public function edit(Request $request, AddressBook $addressBook): Response
     {
@@ -86,16 +87,20 @@ class AddressBookController extends AbstractController
     }
 
     /**
-     * @Route("/address/{id}/show", name="address/show")
+     * @Route("/address/{id}/show", name="address/show", methods={"GET"})
      */
     public function show($id): Response
     {
+        $currentUser = $this->security->getUser();
         $addressBook = $this->entityManager->getRepository(AddressBook::class)->findOneBy(['id' => $id]);
-        return $this->render('address/show.html.twig', ['addressBook' => $addressBook]);
+        if($addressBook->getUser()->getId() !== $currentUser->getId()) {
+            Throw new AccessDeniedException;
+        }
+        return $this->render('address/show.html.twig', ['addressBook' => $addressBook ]);
     }
 
     /**
-     * @Route("/address/{id}/delete", name="address/delete", methods={"POST"})
+     * @Route("/address/{id}/delete", name="address/delete", methods={"DELETE"})
      */
     public function delete(Request $request, AddressHelper $addressHelper): RedirectResponse
     {

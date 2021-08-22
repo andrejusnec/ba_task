@@ -19,9 +19,6 @@ class QueryListType extends AbstractType
         $builder
             ->add('receiver', EmailType::class, [
                 'attr' => ['class' => 'form-control', 'placeholder' => 'Email', 'mapped' => false]
-            ])->add('sender', EntityType::class, [
-                'class' => User::class,
-                'attr' => ['class' => 'form-control', 'disabled' => true]
             ])->add('addressRecord', EntityType::class, [
                 'class' => AddressBook::class,
                 'attr' => ['class' => 'form-control', 'disabled' => true]

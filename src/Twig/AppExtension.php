@@ -16,8 +16,8 @@ class AppExtension extends AbstractExtension
     }
 
     /**
-     * @param $status
-     * Transforms the status boolean to a string representation for a user
+     * @param $receiveStatus
+     * @param $sendStatus
      * @return string
      */
     public function formatStatus($receiveStatus, $sendStatus): string

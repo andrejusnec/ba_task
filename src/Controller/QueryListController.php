@@ -32,7 +32,7 @@ class QueryListController extends AbstractController
     }
 
     /**
-     * @Route("/querylist/share/{addressBook}", name="querylist_share")
+     * @Route("/querylist/share/{addressBook}", name="querylist_share" , methods={"POST", "GET"})
      */
     public function share(Request $request, AddressBook $addressBook): RedirectResponse|Response
     {
@@ -48,27 +48,30 @@ class QueryListController extends AbstractController
             $querylist = $form->getData();
             $receiver = $querylist->getReceiver();
             $receiver = $this->entityManager->getRepository(User::class)->findOneBy(['email' => $receiver]);
-            $queryCheck = $this->entityManager
-                ->getRepository(QueryList::class)
-                ->findOneBy([
-                    'receiver' => $receiver,
-                    'sender' => $sender,
-                    'addressRecord' => $addressBook,
-                    'sendStatus' => true,
-                    'receiveStatus' => null
-                ]);
-            if (null !== $receiver && null === $queryCheck) {
-                $querylist->setReceiver($receiver);
-                $querylist->setSender($sender);
-                $querylist->setAddressRecord($addressBook);
-                $querylist->setSendStatus(true);
-                $this->entityManager->persist($querylist);
-                $this->entityManager->flush();
-                $this->addFlash('success', 'You have successfully shared a contact.');
-                return $this->redirectToRoute('addresses');
+            if ($receiver->getId() !== $sender->getId()) {
+                $queryCheck = $this->entityManager
+                    ->getRepository(QueryList::class)
+                    ->findOneBy([
+                        'receiver' => $receiver,
+                        'sender' => $sender,
+                        'addressRecord' => $addressBook,
+                        'sendStatus' => true,
+                        'receiveStatus' => null
+                    ]);
+                if (null === $queryCheck) {
+                    $querylist->setReceiver($receiver);
+                    $querylist->setSender($sender);
+                    $querylist->setAddressRecord($addressBook);
+                    $querylist->setSendStatus(true);
+                    $this->entityManager->persist($querylist);
+                    $this->entityManager->flush();
+                    $this->addFlash('success', 'You have successfully shared a contact.');
+                    return $this->redirectToRoute('addresses');
+                }
+                null !== $queryCheck ? $form->addError(new FormError('You already shared this contact.')) :
+                    $form->addError(new FormError('There is no user with this email.'));
             }
-            null !== $queryCheck ? $form->addError(new FormError('You already shared this contact.')) :
-                $form->addError(new FormError('There is no user with this email.'));
+            $form->addError(new FormError('You can\'t share contact with yourself'));
         }
         return $this->render('query_list/share_query.html.twig', ['form' => $form->createView()]);
     }
@@ -105,14 +108,14 @@ class QueryListController extends AbstractController
     }
 
     /**
-     * @Route("/query_list/{id}/cancel_share", name="query_list/cancel_share")
+     * @Route("/query_list/{id}/cancel_share", name="query_list/cancel_share" , methods={"POST"})
      */
     public function cancelShare(int $id): RedirectResponse
     {
         $user = $this->security->getUser();
         $querylist = $this->entityManager->getRepository(QueryList::class)->findOneBy(['id' => $id, 'sender' => $user]);
-        if (null !== $querylist && $querylist->getSendStatus() && null === $querylist->getReceiveStatus()) {
-            $querylist->setSendStatus(false);
+        if (null !== $querylist && true === $querylist->getSendStatus() && null === $querylist->getReceiveStatus()) {
+            $querylist->setSendStatus(!$querylist->getSendStatus());
             $this->entityManager->persist($querylist);
             $this->entityManager->flush();
             $this->addFlash('success', 'You have canceled your sharing.');
