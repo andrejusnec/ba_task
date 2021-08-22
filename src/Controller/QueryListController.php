@@ -112,7 +112,7 @@ class QueryListController extends AbstractController
         $user = $this->security->getUser();
         $querylist = $this->entityManager->getRepository(QueryList::class)->findOneBy(['id' => $id, 'sender' => $user]);
         if (null !== $querylist && $querylist->getSendStatus() && null === $querylist->getReceiveStatus()) {
-            $querylist->setSendingStatus(false);
+            $querylist->setSendStatus(false);
             $this->entityManager->persist($querylist);
             $this->entityManager->flush();
             $this->addFlash('success', 'You have canceled your sharing.');

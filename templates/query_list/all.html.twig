@@ -21,13 +21,13 @@
                                            href="{{ path('query_list/show_sended', {id : item.id}) }}">{{ item.receiver }}</a>
                         </th>
                         <td>{{ item.addressRecord.name }}</td>
-                        <td>{{ status_text(item.receiveStatus) }}</td>
+                        <td>{{ status_text(item.receiveStatus, item.sendStatus) }}</td>
                     </tr>
                 {% endfor %}
                 </tbody>
             </table>
         </div>
-        <div class="col-md-10">
+        <div class="col-md-12">
             <table class="table table-bordered">
                 <h2>Received</h2>
                 <thead>
@@ -47,7 +47,7 @@
                         {% if item.receiveStatus is null %}
                             <td><strong>(New)</strong></td>
                         {% else %}
-                            <td>{{ status_text(item.receiveStatus) }}</td>
+                            <td>{{ status_text(item.receiveStatus, item.sendStatus) }}</td>
                         {% endif %}
                     </tr>
                 {% endfor %}

@@ -20,12 +20,15 @@ class AppExtension extends AbstractExtension
      * Transforms the status boolean to a string representation for a user
      * @return string
      */
-    public function formatStatus($status): string
+    public function formatStatus($receiveStatus, $sendStatus): string
     {
-        if (null === $status) {
+        if(!$sendStatus) {
+            return 'Canceled';
+        }
+        if (null === $receiveStatus && true == $sendStatus) {
             return 'Sended';
         }
-        return $status ? 'Accepted' : 'Rejected';
+        return $receiveStatus ? 'Accepted' : 'Rejected';
     }
 
     /**
