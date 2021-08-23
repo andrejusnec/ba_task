@@ -10,6 +10,7 @@ use App\Repository\AddressBookRepository;
 use App\Repository\UserRepository;
 use App\Services\AddressHelper;
 use Doctrine\ORM\EntityManagerInterface;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -17,7 +18,6 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\Security\Core\Security;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class AddressBookController extends AbstractController
 {
@@ -29,6 +29,7 @@ class AddressBookController extends AbstractController
      * @param EntityManagerInterface $entityManager
      * @param AddressBookRepository $addressBookRepository
      * @param Security $security
+     * @IsGranted("ROLE_USER")
      */
     public function __construct(EntityManagerInterface $entityManager, AddressBookRepository $addressBookRepository, Security $security)
     {
@@ -93,21 +94,21 @@ class AddressBookController extends AbstractController
     {
         $currentUser = $this->security->getUser();
         $addressBook = $this->entityManager->getRepository(AddressBook::class)->findOneBy(['id' => $id]);
-        if($addressBook->getUser()->getId() !== $currentUser->getId()) {
-            Throw new AccessDeniedException;
+        if ($addressBook->getUser()->getId() !== $currentUser->getId()) {
+            throw new AccessDeniedException;
         }
-        return $this->render('address/show.html.twig', ['addressBook' => $addressBook ]);
+        return $this->render('address/show.html.twig', ['addressBook' => $addressBook]);
     }
 
     /**
-     * @Route("/address/{id}/delete", name="address/delete", methods={"DELETE"})
+     * @Route("/address/{id}/delete", name="address/delete", methods={"DELETE", "POST"})
      */
     public function delete(Request $request, AddressHelper $addressHelper): RedirectResponse
     {
         $addressBook = $this->addressBookRepository->find($request->get('id'));
         $querylists = $this->entityManager->getRepository(QueryList::class)->findBy(['addressRecord' => $addressBook]);
         if (null !== $addressBook && $addressHelper->checkForActiveQueryLists($querylists)) {
-            foreach ($querylists as $query){
+            foreach ($querylists as $query) {
                 $this->entityManager->remove($query);
             }
             $this->entityManager->remove($addressBook);

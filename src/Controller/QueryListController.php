@@ -13,6 +13,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\Security\Core\Security;
 
 class QueryListController extends AbstractController
@@ -32,16 +33,12 @@ class QueryListController extends AbstractController
     }
 
     /**
-     * @Route("/querylist/share/{addressBook}", name="querylist_share" , methods={"POST", "GET"})
+     * @Route("/querylist/share/{id}", name="querylist_share" , methods={"POST", "GET"})
      */
     public function share(Request $request, AddressBook $addressBook): RedirectResponse|Response
     {
-        $addressBook = $this->entityManager->getRepository(AddressBook::class)->findOneBy(['id' => $addressBook]);
         $sender = $this->security->getUser();
-        $querylist = new QueryList();
-        $querylist->setSender($sender);
-        $querylist->setAddressRecord($addressBook);
-        $form = $this->createForm(QueryListType::class, $querylist);
+        $form = $this->createForm(QueryListType::class);
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
@@ -68,12 +65,11 @@ class QueryListController extends AbstractController
                     $this->addFlash('success', 'You have successfully shared a contact.');
                     return $this->redirectToRoute('addresses');
                 }
-                null !== $queryCheck ? $form->addError(new FormError('You already shared this contact.')) :
-                    $form->addError(new FormError('There is no user with this email.'));
+                $form->addError(new FormError('You already shared this contact.'));
             }
             $form->addError(new FormError('You can\'t share contact with yourself'));
         }
-        return $this->render('query_list/share_query.html.twig', ['form' => $form->createView()]);
+        return $this->render('query_list/share_query.html.twig', ['form' => $form->createView(), 'addressBook' => $addressBook]);
     }
 
     /**
@@ -91,32 +87,34 @@ class QueryListController extends AbstractController
      * @Route("/query_list/{id}/show_received", name="query_list/show_received")
      */
 
-    public function showReceived(int $id): Response
+    public function showReceived(QueryList $queryList): Response
     {
-        $querylist = $this->entityManager->getRepository(QueryList::class)->find($id);
-        //extra check
-        return $this->render('query_list/show_received.html.twig', ['querylist' => $querylist]);
+        if ($this->security->getUser() !== $queryList->getReceiver()) {
+            throw new AccessDeniedException;
+        }
+        return $this->render('query_list/show_received.html.twig', ['querylist' => $queryList]);
     }
 
     /**
      * @Route("/query_list/{id}/show_sended", name="query_list/show_sended")
      */
-    public function showSended(int $id): Response
+    public function showSended(QueryList $queryList): Response
     {
-        $querylist = $this->entityManager->getRepository(QueryList::class)->find($id);
-        return $this->render('query_list/show_sended.html.twig', ['querylist' => $querylist]);
+        if ($this->security->getUser() !== $queryList->getSender()) {
+            throw new AccessDeniedException;
+        }
+        return $this->render('query_list/show_sended.html.twig', ['querylist' => $queryList]);
     }
 
     /**
      * @Route("/query_list/{id}/cancel_share", name="query_list/cancel_share" , methods={"POST"})
      */
-    public function cancelShare(int $id): RedirectResponse
+    public function cancelShare(QueryList $queryList): RedirectResponse
     {
         $user = $this->security->getUser();
-        $querylist = $this->entityManager->getRepository(QueryList::class)->findOneBy(['id' => $id, 'sender' => $user]);
-        if (null !== $querylist && true === $querylist->getSendStatus() && null === $querylist->getReceiveStatus()) {
-            $querylist->setSendStatus(!$querylist->getSendStatus());
-            $this->entityManager->persist($querylist);
+        if ($user === $queryList->getSender() && true === $queryList->getSendStatus() && null === $queryList->getReceiveStatus()) {
+            $queryList->setSendStatus(!$queryList->getSendStatus());
+            $this->entityManager->persist($queryList);
             $this->entityManager->flush();
             $this->addFlash('success', 'You have canceled your sharing.');
         }
@@ -124,23 +122,22 @@ class QueryListController extends AbstractController
     }
 
     /**
-     * @Route("/query_list/{id}/{action}", name="query_list/resolve")
+     * @Route("/query_list/{id}/{action}", name="query_list/resolve", methods={"POST"})
      */
-    public function resolveQuery(int $id, string $action): RedirectResponse
+    public function resolveQuery(QueryList $queryList, string $action): RedirectResponse
     {
-        $querylist = $this->entityManager->getRepository(QueryList::class)->find($id);
-        if (null !== $querylist && $querylist->getSendStatus() && null === $querylist->getReceiveStatus()) {
-            $querylist->setReceiveStatus(false);
+        if ($queryList->getSendStatus() && null === $queryList->getReceiveStatus()) {
+            $queryList->setReceiveStatus(false);
             if ('Accept' === $action) {
-                $querylist->setReceiveStatus(true);
+                $queryList->setReceiveStatus(true);
                 $addressBook = new AddressBook();
-                $addressBook->setName($querylist->getAddressRecord()->getName());
-                $addressBook->setUser($querylist->getReceiver());
-                $addressBook->setNumber($querylist->getAddressRecord()->getNumber());
+                $addressBook->setName($queryList->getAddressRecord()->getName());
+                $addressBook->setUser($queryList->getReceiver());
+                $addressBook->setNumber($queryList->getAddressRecord()->getNumber());
                 $this->entityManager->persist($addressBook);
                 $this->addFlash('success', 'Address was successfully added to you\'r Address Book');
             }
-            $this->entityManager->persist($querylist);
+            $this->entityManager->persist($queryList);
             $this->entityManager->flush();
         }
         return $this->redirectToRoute("users_querylists");

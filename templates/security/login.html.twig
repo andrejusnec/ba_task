@@ -3,6 +3,9 @@
 {% block title %}Log in!{% endblock %}
 
 {% block body %}
+    {% for flash in app.flashes('success') %}
+        <div class="alert alert-success">{{ flash }}</div>
+    {% endfor %}
     <div class="col-md-4" style="margin: auto">
         <form method="post" style="margin-top: 50px">
             {% if error %}
