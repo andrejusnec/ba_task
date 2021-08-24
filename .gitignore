@@ -244,10 +244,9 @@ modules.xml
 # End of https://www.toptal.com/developers/gitignore/api/symfony,phpstorm,phpstorm+all
 ###> symfony/phpunit-bridge ###
 .phpunit.result.cache
-/phpunit.xml
 ###< symfony/phpunit-bridge ###
 
-###> phpunit/phpunit ###
-/phpunit.xml
-.phpunit.result.cache
-###< phpunit/phpunit ###
+### cs-fixer ###
+/tools/
+.php-cs-fixer.cache
+

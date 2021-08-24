@@ -4,8 +4,6 @@ namespace App\Tests\Unit;
 
 use App\Entity\AddressBook;
 use App\Entity\User;
-use App\Repository\UserRepository;
-use Doctrine\Persistence\ObjectManager;
 use PHPUnit\Framework\TestCase;
 
 class AddressBookEntityTest extends TestCase

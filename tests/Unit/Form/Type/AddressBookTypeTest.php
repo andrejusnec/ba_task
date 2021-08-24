@@ -15,20 +15,17 @@ class AddressBookTypeTest extends TypeTestCase
     {
         $formData = [
             'name' => 'Test name',
-            'number' => '+37060784616'
+            'number' => '+37060784616',
         ];
 
         $model = new AddressBook();
 
-        // $formData will retrieve data from the form submission; pass it as the second argument
         $form = $this->factory->create(AddressBookType::class, $model);
         $expected = new AddressBook();
         $expected->setName('Test name');
         $expected->setNumber('+37060784616');
         $form->submit($formData);
-        // This check ensures there are no transformation failures
         $this->assertTrue($form->isSynchronized());
-        // check that $formData was modified as expected when the form was submitted
         $this->assertEquals($expected, $model);
     }
 
@@ -41,7 +38,6 @@ class AddressBookTypeTest extends TypeTestCase
         $addressBook->setName('BA');
         $addressBook->setNumber('+37060784612');
 
-        // The initial data may be used to compute custom view variables
         $view = $this->factory->create(AddressBookType::class, $addressBook)
             ->createView();
 

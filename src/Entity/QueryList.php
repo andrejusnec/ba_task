@@ -38,12 +38,12 @@ class QueryList
     /**
      * @ORM\Column(type="boolean", nullable=true)
      */
-    private $sendStatus;
+    private ?bool $sendStatus;
 
     /**
      * @ORM\Column(type="boolean", nullable=true)
      */
-    private $receiveStatus;
+    private ?bool $receiveStatus;
 
     public function getId(): ?int
     {

@@ -3,10 +3,9 @@
 namespace App\Tests\Functional;
 
 use App\Repository\UserRepository;
-use Doctrine\ORM\NonUniqueResultException;
 use Generator;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
+use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class AuthorizationTest extends WebTestCase
 {
@@ -26,7 +25,6 @@ class AuthorizationTest extends WebTestCase
         $this->client->request('GET', $url);
         $this->client->request('POST', '/address/1/edit');
         $this->assertResponseRedirects('/login');
-
     }
 
     /**
@@ -77,10 +75,6 @@ class AuthorizationTest extends WebTestCase
         $this->assertSelectorTextContains('td', 'Name');
     }
 
-
-    /**
-     * @return Generator
-     */
     public function urlProvider(): Generator
     {
         yield ['/address/add'];
@@ -93,9 +87,6 @@ class AuthorizationTest extends WebTestCase
         yield ['/query_list/6/show_sended'];
     }
 
-    /**
-     * @return Generator
-     */
     public function urlProviderForUnauthorized(): Generator
     {
         yield ['/register'];
@@ -103,5 +94,4 @@ class AuthorizationTest extends WebTestCase
         yield ['/login/resend_email_verification'];
         yield ['/reset-password'];
     }
-
 }

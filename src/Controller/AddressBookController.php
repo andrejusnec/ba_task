@@ -4,10 +4,8 @@ namespace App\Controller;
 
 use App\Entity\AddressBook;
 use App\Entity\QueryList;
-use App\Entity\User;
 use App\Form\AddressBookType;
 use App\Repository\AddressBookRepository;
-use App\Repository\UserRepository;
 use App\Services\AddressHelper;
 use Doctrine\ORM\EntityManagerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
@@ -26,9 +24,6 @@ class AddressBookController extends AbstractController
     private Security $security;
 
     /**
-     * @param EntityManagerInterface $entityManager
-     * @param AddressBookRepository $addressBookRepository
-     * @param Security $security
      * @IsGranted("ROLE_USER")
      */
     public function __construct(EntityManagerInterface $entityManager, AddressBookRepository $addressBookRepository, Security $security)
@@ -40,9 +35,8 @@ class AddressBookController extends AbstractController
 
     /**
      * @param EntityManagerInterface $entityManager
-     * @param AddressBookRepository $addressBookRepository
+     * @param AddressBookRepository  $addressBookRepository
      */
-
 
     /**
      * @Route("/addresses", name="addresses")
@@ -50,6 +44,7 @@ class AddressBookController extends AbstractController
     public function all(): Response
     {
         $allAddressbooks = $this->addressBookRepository->findBy(['user' => $this->security->getUser()]);
+
         return $this->render('address/index.html.twig', ['list' => $allAddressbooks]);
     }
 
@@ -66,8 +61,10 @@ class AddressBookController extends AbstractController
             $this->entityManager->persist($addressBook);
             $this->entityManager->flush();
             $this->addFlash('success', 'Address has been successfully added');
+
             return $this->redirectToRoute('addresses');
         }
+
         return $this->render('address/add.html.twig', ['form' => $form->createView()]);
     }
 
@@ -82,8 +79,10 @@ class AddressBookController extends AbstractController
             $this->entityManager->persist($form->getData());
             $this->entityManager->flush();
             $this->addFlash('success', 'Address has been successfully edited');
+
             return $this->redirectToRoute('addresses');
         }
+
         return $this->render('address/edit.html.twig', ['form' => $form->createView(), 'addressBook' => $addressBook]);
     }
 
@@ -95,8 +94,9 @@ class AddressBookController extends AbstractController
         $currentUser = $this->security->getUser();
         $addressBook = $this->entityManager->getRepository(AddressBook::class)->findOneBy(['id' => $id]);
         if ($addressBook->getUser()->getId() !== $currentUser->getId()) {
-            throw new AccessDeniedException;
+            throw new AccessDeniedException();
         }
+
         return $this->render('address/show.html.twig', ['addressBook' => $addressBook]);
     }
 
@@ -114,9 +114,11 @@ class AddressBookController extends AbstractController
             $this->entityManager->remove($addressBook);
             $this->entityManager->flush();
             $this->addFlash('success', 'Address has been successfully deleted');
+
             return $this->redirectToRoute('addresses');
         }
         $this->addFlash('error', 'Contact is missing or you have active Share of this contact.');
+
         return $this->redirectToRoute('address/show', ['id' => $addressBook->getId()]);
     }
 }

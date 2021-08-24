@@ -2,10 +2,7 @@
 
 namespace App\Form;
 
-use App\Entity\AddressBook;
 use App\Entity\QueryList;
-use App\Repository\QueryListRepository;
-use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -17,7 +14,7 @@ class QueryListType extends AbstractType
     {
         $builder
             ->add('receiver', EmailType::class, [
-                'attr' => ['class' => 'form-control', 'placeholder' => 'Email', 'mapped' => false]
+                'attr' => ['class' => 'form-control', 'placeholder' => 'Email', 'mapped' => false],
             ]);
     }
 

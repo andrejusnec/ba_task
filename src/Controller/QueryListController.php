@@ -22,10 +22,6 @@ class QueryListController extends AbstractController
 
     private EntityManagerInterface $entityManager;
 
-    /**
-     * @param Security $security
-     * @param EntityManagerInterface $entityManager
-     */
     public function __construct(Security $security, EntityManagerInterface $entityManager)
     {
         $this->security = $security;
@@ -53,7 +49,7 @@ class QueryListController extends AbstractController
                         'sender' => $sender,
                         'addressRecord' => $addressBook,
                         'sendStatus' => true,
-                        'receiveStatus' => null
+                        'receiveStatus' => null,
                     ]);
                 if (null === $queryCheck) {
                     $querylist->setReceiver($receiver);
@@ -63,12 +59,14 @@ class QueryListController extends AbstractController
                     $this->entityManager->persist($querylist);
                     $this->entityManager->flush();
                     $this->addFlash('success', 'You have successfully shared a contact.');
+
                     return $this->redirectToRoute('addresses');
                 }
                 $form->addError(new FormError('You already shared this contact.'));
             }
             $form->addError(new FormError('You can\'t share contact with yourself'));
         }
+
         return $this->render('query_list/share_query.html.twig', ['form' => $form->createView(), 'addressBook' => $addressBook]);
     }
 
@@ -80,18 +78,19 @@ class QueryListController extends AbstractController
         $userId = $this->security->getUser()->getId();
         $receivedQueries = $this->entityManager->getRepository(QueryList::class)->findBy(['receiver' => $userId, 'sendStatus' => true]);
         $sharedQueries = $this->entityManager->getRepository(QueryList::class)->findBy(['sender' => $userId]);
+
         return $this->render('query_list/all.html.twig', ['sharedQueries' => $sharedQueries, 'receivedQueries' => $receivedQueries]);
     }
 
     /**
      * @Route("/query_list/{id}/show_received", name="query_list/show_received")
      */
-
     public function showReceived(QueryList $queryList): Response
     {
         if ($this->security->getUser() !== $queryList->getReceiver()) {
-            throw new AccessDeniedException;
+            throw new AccessDeniedException();
         }
+
         return $this->render('query_list/show_received.html.twig', ['querylist' => $queryList]);
     }
 
@@ -101,8 +100,9 @@ class QueryListController extends AbstractController
     public function showSended(QueryList $queryList): Response
     {
         if ($this->security->getUser() !== $queryList->getSender()) {
-            throw new AccessDeniedException;
+            throw new AccessDeniedException();
         }
+
         return $this->render('query_list/show_sended.html.twig', ['querylist' => $queryList]);
     }
 
@@ -118,6 +118,7 @@ class QueryListController extends AbstractController
             $this->entityManager->flush();
             $this->addFlash('success', 'You have canceled your sharing.');
         }
+
         return $this->redirectToRoute('users_querylists');
     }
 
@@ -140,7 +141,7 @@ class QueryListController extends AbstractController
             $this->entityManager->persist($queryList);
             $this->entityManager->flush();
         }
-        return $this->redirectToRoute("users_querylists");
-    }
 
+        return $this->redirectToRoute('users_querylists');
+    }
 }
