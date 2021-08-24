@@ -22,10 +22,10 @@ class AddressBook
      * @ORM\Column(type="string", length=100, nullable=true)
      * @Assert\NotBlank
      * @Assert\Length(
-     *      min = 2,
-     *      max = 100,
-     *      minMessage = "Name must be at least {{ limit }} characters long",
-     *      maxMessage = "Name cannot be longer than {{ limit }} characters"
+     *     min=2,
+     *     max=100,
+     *     minMessage="Name must be at least {{ limit }} characters long",
+     *     maxMessage="Name cannot be longer than {{ limit }} characters"
      * )
      */
     private ?string $name;
@@ -34,11 +34,10 @@ class AddressBook
      * @ORM\Column(type="string", length=30)
      * @Assert\NotBlank
      * @Assert\Regex(
-     *     pattern = "/^(.*\+370[0-9\-\+]{8})$/m",
+     *     pattern="/^(.*\+370[0-9\-\+]{8})$/m",
      *     message="Invalid format. Use +370******** format"
      * )
      */
-
     private ?string $number;
 
     /**

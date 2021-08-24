@@ -9,10 +9,10 @@
     {{ form_row(form.receiver) }}
 </div>
     <div class="col-md-4" style="margin: auto">
-        {{ form_row(form.sender) }}
-    </div>
-    <div class="col-md-4" style="margin: auto">
-        {{ form_row(form.addressRecord) }}
+        <div>
+            <label for="query_list_contact">Contact</label>
+            <input class="form-control" id="query_list_contact" type="text" value="{{ addressBook.name }}" disabled="disabled">
+        </div>
     </div>
 <div class="col-md-3 offset-md-4" style="margin-top: 10px;">
     <button class="btn btn-primary" type="submit">Share</button>

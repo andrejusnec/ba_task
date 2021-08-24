@@ -11,23 +11,23 @@ class AppExtension extends AbstractExtension
     {
         return [
             new TwigFunction('status_text', [$this, 'formatStatus']),
-            new TwigFunction('status_style', [$this, 'addStyleOnStatus'])
+            new TwigFunction('status_style', [$this, 'addStyleOnStatus']),
         ];
     }
 
     /**
-     * @param $status
-     * Transforms the status boolean to a string representation for a user
-     * @return string
+     * @param $receiveStatus
+     * @param $sendStatus
      */
     public function formatStatus($receiveStatus, $sendStatus): string
     {
-        if(!$sendStatus) {
+        if (!$sendStatus) {
             return 'Canceled';
         }
         if (null === $receiveStatus && true == $sendStatus) {
             return 'Sended';
         }
+
         return $receiveStatus ? 'Accepted' : 'Rejected';
     }
 
@@ -35,7 +35,6 @@ class AppExtension extends AbstractExtension
      * @param $receiveStatus
      * @param $sendStatus
      * Adds css styling based on status and disables element
-     * @return string
      */
     public function addStyleOnStatus($receiveStatus, $sendStatus): string
     {
@@ -46,7 +45,7 @@ class AppExtension extends AbstractExtension
         if (false === $sendStatus || false === $receiveStatus) {
             $styleText = 'style=background-color:lightgrey;pointer-events:none';
         }
+
         return $styleText;
     }
-
 }
