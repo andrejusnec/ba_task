@@ -3,7 +3,9 @@
 namespace App\Repository;
 
 use App\Entity\AddressBook;
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -19,6 +21,24 @@ class AddressBookRepository extends ServiceEntityRepository
         parent::__construct($registry, AddressBook::class);
     }
 
+    /**
+     * @param string|null $text
+     * @param User $user
+     * @return QueryBuilder
+     */
+    public function getAllWithSearchQueryBuilder(?string $text, User $user) : QueryBuilder
+    {
+        $qb = $this->createQueryBuilder('ab')
+            ->andWhere('ab.user = :user')
+            ->setParameter('user', $user);
+
+            if($text) {
+                $qb->andWhere('ab.name LIKE :text OR ab.number LIKE :text')
+                    ->setParameter('text', '%'.$text.'%');
+            }
+            return $qb
+                ->orderBy('ab.name', 'ASC');
+    }
     // /**
     //  * @return AddressBook[] Returns an array of AddressBook objects
     //  */

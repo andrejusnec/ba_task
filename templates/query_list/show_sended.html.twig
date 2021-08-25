@@ -1,10 +1,25 @@
 {% extends 'base.html.twig' %}
 {% block body %}
-    <div class="card" style="width: 18rem;">
-        <img class="card-img-top" src="#" alt="Card image cap">
-        <div class="card-body">
-            <h5 class="card-title">{{ querylist.AddressRecord.name }}</h5>
-            <p class="card-text">{{ querylist.AddressRecord.number }}</p>
+<div class="card bg-secondary address-card" style="max-width: 460px; margin:auto">
+    <h5 class="card-header" style="margin: auto">
+        <img class="img-thumbnail address-picture" src="{{ querylist.addressRecord.imagePath|imagine_filter('squared_thumbnail_small')}}"><br>
+    </h5>
+    <div class="card-body">
+        <table class="table table-striped">
+            <tbody>
+            <tr>
+                <td scope="row">Name</td>
+                <td>{{ querylist.AddressRecord.name }}</td>
+            </tr>
+            <tr>
+                <td scope="row">Phone number</td>
+                <td>{{ querylist.AddressRecord.number }}</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="card-footer">
+        <div>
             <div>
                 <form style="display: inline-block" method="post"
                       action="{{ path('query_list/cancel_share', {id : querylist.id }) }}">
@@ -13,4 +28,5 @@
             </div>
         </div>
     </div>
+</div>
 {% endblock %}

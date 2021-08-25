@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\AddressBookRepository;
+use App\Services\UploaderHelper;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -45,6 +46,11 @@ class AddressBook
      * @ORM\JoinColumn(nullable=false)
      */
     private ?User $user;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $ImageFileName;
 
     public function getId(): ?int
     {
@@ -93,5 +99,21 @@ class AddressBook
     public function __toString()
     {
         return $this->name;
+    }
+
+    public function getImageFileName(): ?string
+    {
+        return $this->ImageFileName;
+    }
+
+    public function setImageFileName(?string $ImageFileName): self
+    {
+        $this->ImageFileName = $ImageFileName;
+
+        return $this;
+    }
+    public function getImagePath(): string
+    {
+        return UploaderHelper::ADDRESS_BOOK_IMAGE.'/'.$this->getImageFileName();
     }
 }

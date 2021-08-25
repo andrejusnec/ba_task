@@ -7,9 +7,14 @@ use App\Entity\QueryList;
 use App\Form\AddressBookType;
 use App\Repository\AddressBookRepository;
 use App\Services\AddressHelper;
+use App\Services\UploaderHelper;
 use Doctrine\ORM\EntityManagerInterface;
+use Knp\Component\Pager\PaginatorInterface;
+use League\Flysystem\FilesystemException;
+use Liip\ImagineBundle\Imagine\Cache\CacheManager;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -35,28 +40,42 @@ class AddressBookController extends AbstractController
 
     /**
      * @param EntityManagerInterface $entityManager
-     * @param AddressBookRepository  $addressBookRepository
+     * @param AddressBookRepository $addressBookRepository
      */
 
     /**
      * @Route("/addresses", name="addresses")
      */
-    public function all(): Response
+    public function all(Request $request, PaginatorInterface $paginator): Response
     {
-        $allAddressbooks = $this->addressBookRepository->findBy(['user' => $this->security->getUser()]);
+        $q = $request->query->get('q');
+        $queryBuilder = $this->addressBookRepository->getAllWithSearchQueryBuilder($q, $this->security->getUser());
+        $pagination = $paginator->paginate(
+            $queryBuilder, /* query NOT result */
+            $request->query->getInt('page', 1),
+            10
+        );
+        //$allAddressbooks = $this->addressBookRepository->findBy(['user' => $this->security->getUser()]);
 
-        return $this->render('address/index.html.twig', ['list' => $allAddressbooks]);
+        return $this->render('address/index.html.twig', ['pagination' => $pagination]);
     }
 
     /**
      * @Route("/address/add", name="address/add", methods={"POST", "GET"})
+     * @throws FilesystemException
      */
-    public function add(Request $request): Response
+    public function add(Request $request, UploaderHelper $uploaderHelper): Response
     {
         $form = $this->createForm(AddressBookType::class);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $addressBook = $form->getData();
+            /** @var UploadedFile $uploadedFile */
+            $uploadedFile = $form['imageFile']->getData();
+            if ($uploadedFile) {
+                $newFilename = $uploaderHelper->uploadAddressBookImage($uploadedFile, $addressBook->getImageFileName());
+                $addressBook->setImageFileName($newFilename);
+            }
             $addressBook->setUser($this->security->getUser());
             $this->entityManager->persist($addressBook);
             $this->entityManager->flush();
@@ -70,13 +89,21 @@ class AddressBookController extends AbstractController
 
     /**
      * @Route("/address/{id}/edit", name="address/edit", methods={"PUT", "POST", "GET"})
+     * @throws FilesystemException
      */
-    public function edit(Request $request, AddressBook $addressBook): Response
+    public function edit(Request $request, AddressBook $addressBook, UploaderHelper $uploaderHelper): Response
     {
         $form = $this->createForm(AddressBookType::class, $addressBook);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            $this->entityManager->persist($form->getData());
+            $addressBook = $form->getData();
+            /** @var UploadedFile $uploadedFile */
+            $uploadedFile = $form['imageFile']->getData();
+            if ($uploadedFile) {
+                $newFilename = $uploaderHelper->uploadAddressBookImage($uploadedFile, $addressBook->getImageFileName());
+                $addressBook->setImageFileName($newFilename);
+            }
+            $this->entityManager->persist($addressBook);
             $this->entityManager->flush();
             $this->addFlash('success', 'Address has been successfully edited');
 
@@ -89,14 +116,13 @@ class AddressBookController extends AbstractController
     /**
      * @Route("/address/{id}/show", name="address/show", methods={"GET"})
      */
-    public function show($id): Response
+    public function show($id, CacheManager $imagineCacheManager): Response
     {
         $currentUser = $this->security->getUser();
         $addressBook = $this->entityManager->getRepository(AddressBook::class)->findOneBy(['id' => $id]);
         if ($addressBook->getUser()->getId() !== $currentUser->getId()) {
             throw new AccessDeniedException();
         }
-
         return $this->render('address/show.html.twig', ['addressBook' => $addressBook]);
     }
 

@@ -10,6 +10,7 @@
 /mysql/
 /nginx/
 /php/
+/public/uploads/
 ###< symfony/framework-bundle ###
 
 # Created by https://www.toptal.com/developers/gitignore/api/symfony,phpstorm,phpstorm+all
@@ -250,3 +251,7 @@ modules.xml
 /tools/
 .php-cs-fixer.cache
 
+
+###> liip/imagine-bundle ###
+/public/media/cache/
+###< liip/imagine-bundle ###
