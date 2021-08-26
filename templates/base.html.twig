@@ -18,7 +18,7 @@
     <div class="container-fluid">
         <div class="row flex-nowrap">
             {% if app.user %}
-            {{ include('static/navbar.html.twig') }}
+            {{ include('static/sidebar.html.twig') }}
             {% endif %}
             <div class="col py-3">
                 {% for flash in app.flashes('success') %}

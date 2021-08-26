@@ -8,6 +8,7 @@ RUN apt update \
     && docker-php-ext-install zip \
     && pecl install xdebug \
     && docker-php-ext-enable xdebug \
+    && docker-php-ext-configure gd --enable-gd --with-freetype --with-jpeg \
     && docker-php-ext-install -j$(nproc) gd
 
 WORKDIR /var/www/ba_task

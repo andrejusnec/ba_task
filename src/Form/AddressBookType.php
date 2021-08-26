@@ -26,8 +26,8 @@ class AddressBookType extends AbstractType
                 'required' => false,
                 'attr' => ['class' => 'form-control'],
                 'constraints' => [
-                    new Image()
-                ]
+                    new Image(),
+                ],
             ]);
     }
 

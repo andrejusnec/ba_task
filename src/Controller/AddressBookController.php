@@ -19,7 +19,6 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\Security\Core\Security;
 
 class AddressBookController extends AbstractController
@@ -40,7 +39,7 @@ class AddressBookController extends AbstractController
 
     /**
      * @param EntityManagerInterface $entityManager
-     * @param AddressBookRepository $addressBookRepository
+     * @param AddressBookRepository  $addressBookRepository
      */
 
     /**
@@ -62,6 +61,7 @@ class AddressBookController extends AbstractController
 
     /**
      * @Route("/address/add", name="address/add", methods={"POST", "GET"})
+     *
      * @throws FilesystemException
      */
     public function add(Request $request, UploaderHelper $uploaderHelper): Response
@@ -73,7 +73,7 @@ class AddressBookController extends AbstractController
             /** @var UploadedFile $uploadedFile */
             $uploadedFile = $form['imageFile']->getData();
             if ($uploadedFile) {
-                $newFilename = $uploaderHelper->uploadAddressBookImage($uploadedFile, $addressBook->getImageFileName());
+                $newFilename = $uploaderHelper->uploadImage($uploadedFile, $addressBook->getImageFileName(), UploaderHelper::ADDRESS_BOOK_IMAGE);
                 $addressBook->setImageFileName($newFilename);
             }
             $addressBook->setUser($this->security->getUser());
@@ -89,6 +89,7 @@ class AddressBookController extends AbstractController
 
     /**
      * @Route("/address/{id}/edit", name="address/edit", methods={"PUT", "POST", "GET"})
+     *
      * @throws FilesystemException
      */
     public function edit(Request $request, AddressBook $addressBook, UploaderHelper $uploaderHelper): Response
@@ -100,7 +101,7 @@ class AddressBookController extends AbstractController
             /** @var UploadedFile $uploadedFile */
             $uploadedFile = $form['imageFile']->getData();
             if ($uploadedFile) {
-                $newFilename = $uploaderHelper->uploadAddressBookImage($uploadedFile, $addressBook->getImageFileName());
+                $newFilename = $uploaderHelper->uploadImage($uploadedFile, $addressBook->getImageFileName(), UploaderHelper::ADDRESS_BOOK_IMAGE);
                 $addressBook->setImageFileName($newFilename);
             }
             $this->entityManager->persist($addressBook);
@@ -118,11 +119,11 @@ class AddressBookController extends AbstractController
      */
     public function show($id, CacheManager $imagineCacheManager): Response
     {
-        $currentUser = $this->security->getUser();
         $addressBook = $this->entityManager->getRepository(AddressBook::class)->findOneBy(['id' => $id]);
-        if ($addressBook->getUser()->getId() !== $currentUser->getId()) {
-            throw new AccessDeniedException();
+        if ($addressBook->getUser() !== $this->getUser()) {
+            throw $this->createAccessDeniedException();
         }
+
         return $this->render('address/show.html.twig', ['addressBook' => $addressBook]);
     }
 

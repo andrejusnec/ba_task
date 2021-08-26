@@ -4,10 +4,26 @@ namespace App\Tests\Unit\Form\Type;
 
 use App\Entity\AddressBook;
 use App\Form\AddressBookType;
+use Symfony\Component\Form\Extension\Validator\ValidatorExtension;
 use Symfony\Component\Form\Test\TypeTestCase;
+use Symfony\Component\Validator\Validation;
 
 class AddressBookTypeTest extends TypeTestCase
 {
+    protected function getExtensions(): array
+    {
+        $validator = Validation::createValidator();
+
+        // or if you also need to read constraints from annotations
+        $validator = Validation::createValidatorBuilder()
+            ->enableAnnotationMapping(true)
+            ->addDefaultDoctrineAnnotationReader()
+            ->getValidator();
+
+        return [
+            new ValidatorExtension($validator),
+        ];
+    }
     /**
      * @test
      */

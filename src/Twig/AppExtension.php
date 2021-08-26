@@ -52,10 +52,10 @@ class AppExtension extends AbstractExtension
     {
         $styleText = '';
         if (true === $sendStatus && true === $receiveStatus) {
-            $styleText = 'style=background-color:lightgreen;pointer-events:none';
+            $styleText = 'style=background-color:lightgreen;pointer-events:none class=active-ql';
         }
         if (false === $sendStatus || false === $receiveStatus) {
-            $styleText = 'style=background-color:lightgrey;pointer-events:none';
+            $styleText = 'style=background-color:lightgrey;pointer-events:none class=inactive-ql';
         }
 
         return $styleText;
