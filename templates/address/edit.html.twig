@@ -1,8 +1,4 @@
 {% extends 'base.html.twig' %}
 {% block body %}
-    <h2 style="margin-top: 50px">Edit entry</h2>
-    {{ include('address/_form.html.twig') }}
-    <div class="col-md-1" style="margin: auto">
-        <button class="btn btn-primary" type="submit" form="add_form_submit">Edit</button>
-    </div>
+    {{ include('address/_form.html.twig', {button : 'Edit'}) }}
 {% endblock %}

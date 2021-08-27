@@ -3,12 +3,14 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use App\Services\UploaderHelper;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=UserRepository::class)
@@ -25,6 +27,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     /**
      * @ORM\Column(type="string", length=180, unique=true)
+     * @Assert\NotBlank
+     * @Assert\Email(message = "The email '{{ value }}' is not a valid email.")
      */
     private $email;
 
@@ -37,22 +41,28 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @var string The hashed password
      * @ORM\Column(type="string")
      */
-    private $password;
+    private string $password;
 
     /**
      * @ORM\Column(type="string", length=70, nullable=true)
+     * @Assert\Length(
+     *     min=2,
+     *     max=100,
+     *     minMessage="Name must be at least {{ limit }} characters long",
+     *     maxMessage="Name cannot be longer than {{ limit }} characters"
+     * )
      */
-    private $name;
+    private ?string $name;
 
     /**
      * @ORM\Column(type="string", length=20)
      */
-    private $phone;
+    private ?string $phone;
 
     /**
      * @ORM\Column(type="boolean")
      */
-    private $isVerified = false;
+    private bool $isVerified = false;
 
     /**
      * @ORM\OneToMany(targetEntity=AddressBook::class, mappedBy="user", orphanRemoval=true)
@@ -63,6 +73,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @ORM\OneToMany(targetEntity=QueryList::class, mappedBy="sender", orphanRemoval=true)
      */
     private $queryLists;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $imageFileName;
 
     public function __construct()
     {
@@ -195,9 +210,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    /**
-     * @return Collection|AddressBook[]
-     */
     public function getAddressBooks(): Collection
     {
         return $this->addressBooks;
@@ -225,9 +237,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    /**
-     * @return Collection|QueryList[]
-     */
     public function getQueryLists(): Collection
     {
         return $this->queryLists;
@@ -253,5 +262,27 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         }
 
         return $this;
+    }
+
+    public function __toString()
+    {
+        return $this->email;
+    }
+
+    public function getImageFileName(): ?string
+    {
+        return $this->imageFileName;
+    }
+
+    public function setImageFileName(?string $imageFileName): self
+    {
+        $this->imageFileName = $imageFileName;
+
+        return $this;
+    }
+
+    public function getImagePath(): string
+    {
+        return UploaderHelper::USER_IMAGE.'/'.$this->getImageFileName();
     }
 }

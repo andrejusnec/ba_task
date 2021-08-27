@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\AddressBookRepository;
+use App\Services\UploaderHelper;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -22,10 +23,10 @@ class AddressBook
      * @ORM\Column(type="string", length=100, nullable=true)
      * @Assert\NotBlank
      * @Assert\Length(
-     *      min = 2,
-     *      max = 100,
-     *      minMessage = "Name must be at least {{ limit }} characters long",
-     *      maxMessage = "Name cannot be longer than {{ limit }} characters"
+     *     min=2,
+     *     max=100,
+     *     minMessage="Name must be at least {{ limit }} characters long",
+     *     maxMessage="Name cannot be longer than {{ limit }} characters"
      * )
      */
     private ?string $name;
@@ -34,11 +35,10 @@ class AddressBook
      * @ORM\Column(type="string", length=30)
      * @Assert\NotBlank
      * @Assert\Regex(
-     *     pattern = "/^(.*\+370[0-9\-\+]{8})$/m",
+     *     pattern="/^(.*\+370[0-9\-\+]{8})$/m",
      *     message="Invalid format. Use +370******** format"
      * )
      */
-
     private ?string $number;
 
     /**
@@ -46,6 +46,11 @@ class AddressBook
      * @ORM\JoinColumn(nullable=false)
      */
     private ?User $user;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $ImageFileName;
 
     public function getId(): ?int
     {
@@ -86,5 +91,30 @@ class AddressBook
         $this->user = $user;
 
         return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function __toString()
+    {
+        return $this->name;
+    }
+
+    public function getImageFileName(): ?string
+    {
+        return $this->ImageFileName;
+    }
+
+    public function setImageFileName(?string $ImageFileName): self
+    {
+        $this->ImageFileName = $ImageFileName;
+
+        return $this;
+    }
+
+    public function getImagePath(): string
+    {
+        return UploaderHelper::ADDRESS_BOOK_IMAGE.'/'.$this->getImageFileName();
     }
 }

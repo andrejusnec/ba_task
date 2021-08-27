@@ -19,6 +19,8 @@ security:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
         main:
+            pattern: ^/
+            user_checker: App\Security\UserChecker
             lazy: true
             provider: app_user_provider
             custom_authenticator: App\Security\LoginFormAuthenticator
@@ -40,5 +42,10 @@ security:
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used
     access_control:
-        # - { path: ^/admin, roles: ROLE_ADMIN }
-#         - { path: ^(?!/login|register), roles: ROLE_USER }
+#         - { path: ^(?!/app_login|app_register), roles: ROLE_USER }
+         - { path: ^/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+         - { path: ^/register, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+         - { path: ^/verify/email, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+         - { path: ^/reset-password, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+         - { path: ^/verify/resend, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+         - { path: ^, roles: ROLE_USER }

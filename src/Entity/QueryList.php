@@ -38,12 +38,12 @@ class QueryList
     /**
      * @ORM\Column(type="boolean", nullable=true)
      */
-    private $sendStatus;
+    private ?bool $sendStatus;
 
     /**
      * @ORM\Column(type="boolean", nullable=true)
      */
-    private $receiveStatus;
+    private ?bool $receiveStatus;
 
     public function getId(): ?int
     {
@@ -62,12 +62,12 @@ class QueryList
         return $this;
     }
 
-    public function getReceiver(): ?User
+    public function getReceiver()
     {
         return $this->receiver;
     }
 
-    public function setReceiver(?User $receiver): self
+    public function setReceiver($receiver): self
     {
         $this->receiver = $receiver;
 

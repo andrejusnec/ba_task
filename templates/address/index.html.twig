@@ -1,31 +1,54 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello AddressController!{% endblock %}
+{% block title %}Contacts{% endblock %}
 
 {% block body %}
     <div class="row">
         <div class="col-md-6">
-            <table class="table">
+        <form>
+            <div class="input-group mb-3">
+                <input type="text"
+                       name="q"
+                       class="form-control"
+                       placeholder="Search..."
+                       value="{{ app.request.query.get('q') }}"
+                >
+                <div class="input-group-append">
+                    <button type="submit"
+                            class="btn btn-outline-secondary">
+                        <span class="fa fa-search"></span>
+                    </button>
+                </div>
+            </div>
+        </form>
+        </div>
+        <div class="col-md-12">
+            <table class="table table-bordered">
                 <thead>
                 <tr>
-                    <th scope="col">name</th>
-                    <th scope="col">phone</th>
-                    <th scope="col">&nbsp;</th>
-                    <th scope="col">&nbsp;</th>
+                    <th style="width: 50%" scope="col">Name</th>
+                    <th style="width: 50%" scope="col">Phone number</th>
                 </tr>
                 </thead>
                 <tbody>
-                {% for item in list %}
+                {% for item in pagination %}
                     <tr>
-                        <th scope="row">{{ item.name }}</th>
+                        <th scope="row"><a style="text-decoration: none; color: black" href="{{ path('address/show', { id : item.id }) }}">{{ item.name }}</a></th>
                         <td>{{ item.number }}</td>
-                        <td><a class="btn-primary btn" href="{{ path('address/edit', { id : item.id }) }}">EDIT</a></td>
-                        <td><a class="btn-primary btn" href="{{ path('address/show', { id : item.id }) }}">SHOW</a></td>
-                        <td><form method="post" action="{{ path('address/delete', {id : item.id}) }}"><button class="btn btn-primary" name="id">DELETE</button></form></td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="4" class="text-center">
+                            No contacts found
+                        </td>
                     </tr>
                 {% endfor %}
                 </tbody>
             </table>
+            <div class="navigation">
+                {{ knp_pagination_render(pagination) }}
+            </div>
         </div>
     </div>
 {% endblock %}
+

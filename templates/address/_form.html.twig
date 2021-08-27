@@ -1,11 +1,23 @@
 {{ form_start(form, { 'attr' : { 'class': 'row flex-column', 'id':'add_form_submit' } }) }}
-<div class="my-custom-class-for-errors">
+<h2 class="col-md-3 offset-md-4" style="margin-top: 50px">{{ button }} entry</h2>
+<div class="form-error">
     {{ form_errors(form) }}
 </div>
-<div class="col-md-6" style="margin: auto">
+<div class="col-md-4" style="margin: auto">
     {{ form_row(form.name) }}
 </div>
-<div class="col-md-6" style="margin: auto">
+<div class="col-md-4" style="margin: auto">
     {{ form_row(form.number) }}
+</div>
+<div class="col-md-4" style="margin: auto">
+    {{ form_row(form.imageFile) }}
+</div>
+<div class="col-md-4" style="margin: auto">
+{% if form.vars.data.imageFilename|default %}
+    <img style="margin-top: 5px" src="{{ form.vars.data.imagePath|imagine_filter('squared_thumbnail_small') }}" alt="Contact image" height="100">
+{% endif %}
+</div>
+<div class="col-md-3 offset-md-4" style="margin-top: 10px;">
+    <button class="btn btn-primary" type="submit" form="add_form_submit">{{ button }}</button>
 </div>
 {{ form_end(form) }}

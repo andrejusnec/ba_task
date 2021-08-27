@@ -1,0 +1,18 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Resend Email{% endblock %}
+
+{% block body %}
+    <div class="col-md-4" style="margin: auto">
+        <form method="post" action="{{ path('app_email_resend') }}" style="margin-top: 50px">
+
+            <h1 class="h3 mb-3 font-weight-normal">Resend verification email</h1>
+            <label for="inputEmail">Email</label>
+            <input type="email" name="email" id="inputEmail" class="form-control"
+                   autocomplete="email" required autofocus>
+            <button style="margin-top: 10px" class="btn btn-md btn-primary" type="submit">
+                Resend
+            </button>
+        </form>
+    </div>
+{% endblock %}
