@@ -27,9 +27,9 @@ class UserController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $oldPassword = $form['oldPassword']->getData();
             $user = $form->getData();
-            if (null !== $oldPassword) {
-                if (null === $form['plainPassword']->getData() && !$passwordHasher->isPasswordValid($user, $oldPassword)) {
-                    $form->addError(new FormError('New password field is empty.'));
+            if (null !== $form['plainPassword']->getData()) {
+                if (null === $oldPassword || !$passwordHasher->isPasswordValid($user, $oldPassword)) {
+                    $form->addError(new FormError('Old password is invalid.'));
 
                     return $this->render('user/index.html.twig', ['user_form' => $form->createView()]);
                 }

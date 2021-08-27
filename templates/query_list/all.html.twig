@@ -4,6 +4,9 @@
 
 {% block body %}
     <div class="row">
+        <div>
+            <button class="btn btn-primary" id="ql-toggle">Hide Inactive</button>
+        </div>
         <div class="col-md-12">
             <table class="table table-bordered">
                 <h2>Sended</h2>
@@ -20,7 +23,7 @@
                         <th scope="row"><a style="text-decoration: none; color: black"
                                            href="{{ path('query_list/show_sended', {id : item.id}) }}">{{ item.receiver }}</a>
                         </th>
-                        <td>{{ item.addressRecord.name }}</td>
+                        <td>{{ item.addressRecord.name }} ({{ item.addressRecord.number }})</td>
                         <td>{{ status_text(item.receiveStatus, item.sendStatus) }}</td>
                     </tr>
                 {% endfor %}
@@ -54,8 +57,5 @@
                 </tbody>
             </table>
         </div>
-    </div>
-    <div>
-        <button class="btn btn-primary" id="ql-toggle">Hide Inactive</button>
     </div>
 {% endblock %}

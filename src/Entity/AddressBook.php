@@ -112,6 +112,7 @@ class AddressBook
 
         return $this;
     }
+
     public function getImagePath(): string
     {
         return UploaderHelper::ADDRESS_BOOK_IMAGE.'/'.$this->getImageFileName();
