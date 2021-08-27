@@ -15,8 +15,8 @@ ability to share contacts.
 1. Create an Address Book Crud.
 2. Only registered users can use the app.
 3. Ability to share (and cancel sharing) of users contact.
-4. App has to have tests.
-4.1. At least one unit test.
+4. App has to have tests.  
+4.1. At least one unit test.  
 4.2. At least one functional test.
 5. App has to use Docker.
 6. App has to be managed via GUI or API (Can do both).
